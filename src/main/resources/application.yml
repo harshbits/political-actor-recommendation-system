@@ -1,0 +1,33 @@
+info:
+  build:
+    artifact: political-actor-recommendation-system
+    name: political-actor-recommendation-system
+    description: political-actor-recommendation-system
+    version: '@project.version@'
+
+management:
+  port: 3233
+  security:
+    enabled: false
+
+server:
+  port: 2233
+  
+security:
+  user:
+    password: null
+  basic:
+    enabled: false
+  
+
+spring:
+  
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    com.englishasl: DEBUG 
