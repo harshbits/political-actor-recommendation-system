@@ -21,11 +21,38 @@ security:
   
 
 spring:
+  profiles:
   
-  thymeleaf:
-    cache: false
-    mode: LEGACYHTML5
+  kafka:
+    bootstrap-servers:
+    - localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: politicalActorRecommendation
+      enable-auto-commit: false
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      
+    producer:
+      batch-size: 16384
+      buffer-memory: 33554432
+      retries: 0
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
+app:
+  properties:
+#    newsApiUrl: https://newsapi.org/v1/articles
+#    newsApiKey: 65389fbdb76e4955874a20a715ee380e  
+    newsApiUrl: https://api.nytimes.com/svc/news/v3/content/all/
+    newsApiKey: fd184ced33294fda93d5274c3b3b7004
+    newsApisource: u.s.
+    
+    kafka:
+      topic: par.topic
+      messageKey: par.key
+      zookeeperAddress: localhost:2181
+  
 logging:
   level:
     org.springframework.security: DEBUG
