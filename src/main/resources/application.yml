@@ -57,4 +57,4 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web: DEBUG
-    com.englishasl: DEBUG 
+    com.par.system: DEBUG 

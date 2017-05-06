@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.par.system.beans.PoliticalNewsData;
 import com.par.system.beans.Results;
 import com.par.system.config.KafkaAppProperties;
 
@@ -33,12 +34,12 @@ public class ParScrapperService {
 
 		//collect all news articles
 		List<Results> articles = newsApiService.getNewsArticles();
-		
 		if (articles.size() > 0) {
 			articles = filterPoliticalData(articles);
-			String dataToSend = new Gson().toJson(articles);
+			PoliticalNewsData newsData = new PoliticalNewsData();
+			newsData.setResults(articles);
+			String dataToSend = new Gson().toJson(newsData);
 			send(kafkaProperties.getTopic(), dataToSend);
-			logger.info(dataToSend);
 		}
 	}
 	
