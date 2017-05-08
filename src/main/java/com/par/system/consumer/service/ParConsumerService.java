@@ -68,7 +68,7 @@ public class ParConsumerService implements Serializable {
 		JavaDStream<PoliticalNewsData> politicsNews = lines.map(x -> new Gson().fromJson(x, PoliticalNewsData.class));
 		JavaDStream<ActorGroupFrequency> actorGroups = politicsNews
 				.map(x -> performNERJaccardService.getActorGroupFrequency(x));
-		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(x));
+		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(x.getHighestOccuredActorMap()));
 
 		actorString.print();
 

@@ -21,7 +21,6 @@ public class JaccardDistanceService implements Serializable {
 	@Autowired
 	private ApplicationProperties applicationProperties;
 
-//	public List<List<String>> groupActors(List<String> actors) {
 	public List<Map<String, Integer>> groupActors(Map<String, Integer> actorFrequency) {
 
 		List<String> actors = actorFrequency

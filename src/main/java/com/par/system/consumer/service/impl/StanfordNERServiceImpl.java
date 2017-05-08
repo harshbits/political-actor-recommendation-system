@@ -11,10 +11,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.par.system.beans.NERType;
 import com.par.system.consumer.service.StanfordNERService;
 
-import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -42,7 +41,8 @@ public class StanfordNERServiceImpl implements StanfordNERService, Serializable 
 
 			List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 
-			Map<String, NERType> actorData = new HashMap<>();
+			// Map<String, NERType> actorData = new HashMap<>();
+			Map<String, String> actorData = new HashMap<>();
 
 			for (CoreMap sentence : sentences) {
 
@@ -52,33 +52,34 @@ public class StanfordNERServiceImpl implements StanfordNERService, Serializable 
 
 					String word = token.word();
 
-					String category = token.get(CoreAnnotations.NamedEntityTagAnnotation.class);
+					String category = token.get(NamedEntityTagAnnotation.class);
 
 					if (!"O".equals(category)) {
 
 						if (previosCategory == category) {
-
 							if (actorData.containsKey(previosWord)) {
 								actorData.remove(previosWord);
 								previosWord = previosWord + " " + word;
-								actorData.put(previosWord, NERType.valueOf(category));
+								previosCategory = category;
+								actorData.put(previosWord, category);
 							}
 						} else {
-							actorData.put(word, NERType.valueOf(category));
+							actorData.put(word, category);
+							previosCategory = category;
+							previosWord = word;
 						}
-						previosCategory = category;
-						previosWord = word;
 					}
 				}
 			}
-			
+
 			logger.info(actorData.toString());
-			
-			response = actorData
-					.entrySet().stream()
-					.filter(p -> p.getValue() != NERType.LOCATION)
-					.map(p -> p.getKey())
-					.collect(Collectors.toList());
+
+//			response = actorData.entrySet().stream().filter(
+//					p -> p.getValue().equalsIgnoreCase("PERSON") || p.getValue().equalsIgnoreCase("ORGANIZATION"))
+//					.map(p -> p.getKey()).collect(Collectors.toList());
+			response = actorData.entrySet().stream().filter(
+					p -> p.getValue().equalsIgnoreCase("PERSON"))
+					.map(p -> p.getKey()).collect(Collectors.toList());
 
 		} catch (Exception e) {
 			logger.error("", e);

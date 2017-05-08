@@ -14,7 +14,7 @@ import com.par.system.producer.service.ParScrapperService;
 import com.par.system.producer.service.impl.NewsApiServiceImpl;
 
 @Configuration
-public class ApplicationConfiguration {
+public class ApplicationConfiguration{
 
 	@Bean
 	public ParScrapperService scrapperService() {

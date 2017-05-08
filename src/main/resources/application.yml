@@ -53,7 +53,7 @@ app:
     newsApiKey: fd184ced33294fda93d5274c3b3b7004
     newsApisource: u.s.
     
-    jaccardDistanceThreshold: 0.67
+    jaccardDistanceThreshold: 0.70
     
     addNewActorAutomatic: true
     

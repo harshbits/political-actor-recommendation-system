@@ -38,7 +38,8 @@ public class PARSystemApplication {
 			consumerService.runConsumer();
 			
 		} catch (Exception e) {
-			logger.error(""+ e.getStackTrace());
+			e.printStackTrace();
+//			logger.error(""+ e.getStackTrace());
 		}
 	}
 }

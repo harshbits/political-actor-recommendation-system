@@ -14,7 +14,6 @@ import com.par.system.beans.Results;
 
 public class PerformNERJaccardService implements Serializable {
 
-
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
@@ -31,13 +30,12 @@ public class PerformNERJaccardService implements Serializable {
 
 		for (Results result : newsData.getResults()) {
 
-			List<String> actorList = nerService.getParsedSentence(result.getContent() + result.getTitle());
+			List<String> actorList = nerService.getParsedSentence(result.toString());
 			for (String actor : actorList) {
 				if (actorFrequency.containsKey(actor)) {
-					actorFrequency.put(actor,
-							actorFrequency.get(actor) + countFrequency(result.getContent() + result.getTitle(), actor));
+					actorFrequency.put(actor, actorFrequency.get(actor) + countFrequency(result.toString(), actor));
 				} else {
-					actorFrequency.put(actor, countFrequency(result.getContent() + result.getTitle(), actor));
+					actorFrequency.put(actor, countFrequency(result.toString(), actor));
 				}
 			}
 
@@ -49,7 +47,7 @@ public class PerformNERJaccardService implements Serializable {
 
 		Map<String, Integer> highestOccuredActorMap = calculateRank(actorGroup);
 		response.setHighestOccuredActorMap(highestOccuredActorMap);
-		
+
 		return response;
 
 	}
