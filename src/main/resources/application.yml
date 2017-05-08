@@ -54,8 +54,11 @@ app:
     newsApisource: u.s.
     
     jaccardDistanceThreshold: 0.70
-    
+    cameoToRedisAdd: false
     addNewActorAutomatic: false
+    maximumNoOfActorDiscovery: 2
+    redisCameoKey: psa.actor.dictionary
+    redisOutputKey: psa.output.newActor
     
     kafka:
       topic: par.topic

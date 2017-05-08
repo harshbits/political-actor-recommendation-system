@@ -39,8 +39,8 @@ public class PARSystemApplication {
 	@PostConstruct
 	public void init() throws InterruptedException {
 		
-		//should add new actor to cameo or not
-		if(applicationProperties.isAddNewActorAutomatic()){
+		//should add new actor from Cameo to Redis
+		if(applicationProperties.isCameoToRedisAdd()){
 			cameoDictionaryParseService.storeActors();	
 		}
 		

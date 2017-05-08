@@ -10,7 +10,9 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
@@ -27,7 +29,12 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.par.system.beans.ActorGroupFrequency;
 import com.par.system.beans.PoliticalNewsData;
+import com.par.system.config.ApplicationProperties;
 import com.par.system.config.KafkaAppProperties;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 @Scope("prototype")
 @Service
@@ -42,9 +49,14 @@ public class ParConsumerService implements Serializable {
 
 	@Autowired
 	private PerformNERJaccardService performNERJaccardService;
-	
+
 	@Autowired
 	private NewActorDiscoveryService newActorDiscoveryService;
+
+	@Autowired
+	private ApplicationProperties applicationProperties;
+
+	int count = 0;
 
 	public void runConsumer() throws InterruptedException {
 
@@ -68,17 +80,50 @@ public class ParConsumerService implements Serializable {
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
 
 		JavaDStream<String> lines = stream.map(x -> x.value().toString());
-		
+
 		JavaDStream<PoliticalNewsData> politicsNews = lines.map(x -> new Gson().fromJson(x, PoliticalNewsData.class));
-		
+
 		JavaDStream<ActorGroupFrequency> actorGroups = politicsNews
 				.map(x -> performNERJaccardService.getActorGroupFrequency(x));
-		
-//		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(x.getHighestOccuredActorMap()));
-		
-		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(newActorDiscoveryService.getNewActor(x)));
 
-		actorString.print();
+		actorGroups.foreachRDD((VoidFunction<JavaRDD<ActorGroupFrequency>>) rdd -> {
+			rdd.foreach((VoidFunction<ActorGroupFrequency>) s -> {
+
+				// jedis.select(0);
+				if (count < 1) {
+					for (String actor : s.getHighestOccuredActorMap().keySet()) {
+						
+						logger.info("Actor Group : "+s.getHighestOccuredActorMap());
+						try {
+							JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost", 6379);
+							Jedis jedis = pool.getResource();
+							logger.info("Input Actor Check: " + formatActor(actor));
+							Map<String, Boolean> ans = new HashMap();
+							// System.out.println(jedis.hexists("psa.actor.dictionary",
+							// formatActor(actor)));
+							if (jedis.hexists("psa.actor.dictionary", formatActor(actor))) {
+								ans.put(formatActor(actor), true);
+							} else {
+								ans.put(formatActor(actor), false);
+							}
+
+//							jedis.set("psa.actor.new-actor", new Gson().toJson(ans));
+							
+							logger.info(new Gson().toJson(ans));
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					}
+					count = count + 1;
+				}
+			});
+		});
+		// JavaDStream<String> actorString = actorGroups.map(x -> new
+		// Gson().toJson(newActorDiscoveryService.getNewActor(x)));
+
+		// actorString.print();
 
 		try {
 			streamingContext.start();
@@ -89,6 +134,12 @@ public class ParConsumerService implements Serializable {
 			logger.error("Error {}", e);
 		}
 
+	}
+
+	private String formatActor(String actor) {
+		String result = actor.trim().replace(" ", "_");
+		result = result.toUpperCase().trim();
+		return result;
 	}
 
 }

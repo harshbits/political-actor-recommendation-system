@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import com.google.gson.Gson;
 import com.par.system.beans.DirectoryActor;
+import com.par.system.config.ApplicationProperties;
 
 public class CameoDictionaryParseService {
 
@@ -26,6 +27,9 @@ public class CameoDictionaryParseService {
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
+	
+	@Autowired
+	private ApplicationProperties applicationProperties;
 
 	private static DirectoryActor bean = new DirectoryActor();
 
@@ -93,7 +97,7 @@ public class CameoDictionaryParseService {
 			beanList.add(storeBean);
 			logger.info(new Gson().toJson(storeBean));
 
-			redisTemplate.opsForHash().put("psa.actor.dictionary", storeBean.getKey(), new Gson().toJson(storeBean));
+			redisTemplate.opsForHash().put(applicationProperties.getRedisCameoKey(), storeBean.getKey(), new Gson().toJson(storeBean));
 		}
 	}
 

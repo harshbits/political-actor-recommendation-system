@@ -14,6 +14,8 @@ public class ActorGroupFrequency implements Serializable {
 
 	private Map<String, Integer> highestOccuredActorMap;
 
+	private List<Map<String, Integer>> highestOccuredActors;
+
 	public Map<String, Integer> getActorFrequency() {
 		return actorFrequency;
 	}
@@ -36,6 +38,14 @@ public class ActorGroupFrequency implements Serializable {
 
 	public void setHighestOccuredActorMap(Map<String, Integer> highestOccuredActorMap) {
 		this.highestOccuredActorMap = highestOccuredActorMap;
+	}
+
+	public List<Map<String, Integer>> getHighestOccuredActors() {
+		return highestOccuredActors;
+	}
+
+	public void setHighestOccuredActors(List<Map<String, Integer>> highestOccuredActors) {
+		this.highestOccuredActors = highestOccuredActors;
 	}
 
 }
