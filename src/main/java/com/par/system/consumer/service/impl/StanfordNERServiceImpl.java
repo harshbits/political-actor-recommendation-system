@@ -72,7 +72,7 @@ public class StanfordNERServiceImpl implements StanfordNERService, Serializable 
 				}
 			}
 
-			logger.info(actorData.toString());
+//			logger.info(actorData.toString());
 
 //			response = actorData.entrySet().stream().filter(
 //					p -> p.getValue().equalsIgnoreCase("PERSON") || p.getValue().equalsIgnoreCase("ORGANIZATION"))
