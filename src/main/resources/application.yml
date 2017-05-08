@@ -55,7 +55,7 @@ app:
     
     jaccardDistanceThreshold: 0.70
     
-    addNewActorAutomatic: true
+    addNewActorAutomatic: false
     
     kafka:
       topic: par.topic

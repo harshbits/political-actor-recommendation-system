@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.par.system.consumer.service.JaccardDistanceService;
+import com.par.system.consumer.service.NewActorDiscoveryService;
 import com.par.system.consumer.service.ParConsumerService;
 import com.par.system.consumer.service.PerformNERJaccardService;
 import com.par.system.consumer.service.StanfordNERService;
@@ -49,6 +50,16 @@ public class ApplicationConfiguration{
 	@Bean
 	public PerformNERJaccardService performNERJaccardService() {
 		return new PerformNERJaccardService();
+	}
+	
+	@Bean
+	public CameoDictionaryParseService cameoDictionaryParseService(){
+		return new CameoDictionaryParseService();
+	}
+	
+	@Bean
+	public NewActorDiscoveryService newActorDiscoveryService(){
+		return new NewActorDiscoveryService();
 	}
 
 }

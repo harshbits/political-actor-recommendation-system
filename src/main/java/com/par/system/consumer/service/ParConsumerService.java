@@ -42,6 +42,9 @@ public class ParConsumerService implements Serializable {
 
 	@Autowired
 	private PerformNERJaccardService performNERJaccardService;
+	
+	@Autowired
+	private NewActorDiscoveryService newActorDiscoveryService;
 
 	public void runConsumer() throws InterruptedException {
 
@@ -65,10 +68,15 @@ public class ParConsumerService implements Serializable {
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
 
 		JavaDStream<String> lines = stream.map(x -> x.value().toString());
+		
 		JavaDStream<PoliticalNewsData> politicsNews = lines.map(x -> new Gson().fromJson(x, PoliticalNewsData.class));
+		
 		JavaDStream<ActorGroupFrequency> actorGroups = politicsNews
 				.map(x -> performNERJaccardService.getActorGroupFrequency(x));
-		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(x.getHighestOccuredActorMap()));
+		
+//		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(x.getHighestOccuredActorMap()));
+		
+		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(newActorDiscoveryService.getNewActor(x)));
 
 		actorString.print();
 
