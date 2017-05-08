@@ -1,14 +1,16 @@
 package com.par.system.consumer.service.impl;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.par.system.beans.EngilshTagResponse;
 import com.par.system.beans.NERType;
 import com.par.system.consumer.service.StanfordNERService;
 
@@ -20,14 +22,16 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 
-public class StanfordNERServiceImpl implements StanfordNERService {
+public class StanfordNERServiceImpl implements StanfordNERService, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = LoggerFactory.getLogger(StanfordNERServiceImpl.class);
 
 	@Override
-	public EngilshTagResponse getParsedSentence(String data) {
+	public List<String> getParsedSentence(String data) {
 
-		EngilshTagResponse response = new EngilshTagResponse();
+		List<String> response = new ArrayList<>();
 
 		try {
 			Properties props = new Properties();
@@ -66,10 +70,15 @@ public class StanfordNERServiceImpl implements StanfordNERService {
 						previosWord = word;
 					}
 				}
-
 			}
-
+			
 			logger.info(actorData.toString());
+			
+			response = actorData
+					.entrySet().stream()
+					.filter(p -> p.getValue() != NERType.LOCATION)
+					.map(p -> p.getKey())
+					.collect(Collectors.toList());
 
 		} catch (Exception e) {
 			logger.error("", e);

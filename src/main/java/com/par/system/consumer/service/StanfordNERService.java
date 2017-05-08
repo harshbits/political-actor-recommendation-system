@@ -1,12 +1,12 @@
 package com.par.system.consumer.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import com.par.system.beans.EngilshTagResponse;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface StanfordNERService {
 	
-	public EngilshTagResponse getParsedSentence(String sentence);
+	public  List<String> getParsedSentence(String sentence);
 
 }

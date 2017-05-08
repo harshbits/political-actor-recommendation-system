@@ -29,7 +29,7 @@ public class ParScrapperService {
 	@Autowired
 	private NewsApiService newsApiService;
 
-	@Scheduled(fixedRate = 60000)
+	@Scheduled(fixedRate = 60000 * 60)
 	public void runScrapper() {
 
 		//collect all news articles
@@ -66,5 +66,6 @@ public class ParScrapperService {
 		
 		logger.info("sending data='{}' to topic='{}'", data, topic);
 		kafkaTemplate.send(topic, data, data);
+		logger.info("data sent");
 	}
 }

@@ -23,6 +23,11 @@ security:
 spring:
   profiles:
   
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+  
   kafka:
     bootstrap-servers:
     - localhost:9092
@@ -47,6 +52,10 @@ app:
     newsApiUrl: https://api.nytimes.com/svc/news/v3/content/all/
     newsApiKey: fd184ced33294fda93d5274c3b3b7004
     newsApisource: u.s.
+    
+    jaccardDistanceThreshold: 0.67
+    
+    addNewActorAutomatic: true
     
     kafka:
       topic: par.topic

@@ -10,8 +10,12 @@ public class ApplicationProperties {
 	private String newsApiUrl;
 
 	private String newsApiKey;
-	
+
 	private String newsApisource;
+
+	private double jaccardDistanceThreshold;
+
+	private boolean addNewActorAutomatic;
 
 	public String getNewsApiUrl() {
 		return newsApiUrl;
@@ -35,6 +39,22 @@ public class ApplicationProperties {
 
 	public void setNewsApisource(String newsApisource) {
 		this.newsApisource = newsApisource;
+	}
+
+	public double getJaccardDistanceThreshold() {
+		return jaccardDistanceThreshold;
+	}
+
+	public void setJaccardDistanceThreshold(double jaccardDistanceThreshold) {
+		this.jaccardDistanceThreshold = jaccardDistanceThreshold;
+	}
+
+	public boolean isAddNewActorAutomatic() {
+		return addNewActorAutomatic;
+	}
+
+	public void setAddNewActorAutomatic(boolean addNewActorAutomatic) {
+		this.addNewActorAutomatic = addNewActorAutomatic;
 	}
 
 }

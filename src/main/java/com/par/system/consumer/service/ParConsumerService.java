@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.par.system.beans.ActorGroupFrequency;
 import com.par.system.beans.PoliticalNewsData;
 import com.par.system.config.KafkaAppProperties;
 
@@ -38,12 +39,13 @@ public class ParConsumerService implements Serializable {
 
 	@Autowired
 	private KafkaAppProperties kafkaProperties;
-	
+
 	@Autowired
-	
+	private PerformNERJaccardService performNERJaccardService;
 
 	public void runConsumer() throws InterruptedException {
-		SparkConf sparkConf = new SparkConf().setMaster("local[4]").setAppName("TwitterScrapperConsumer");
+
+		SparkConf sparkConf = new SparkConf().setMaster("local[4]").setAppName("PARScrapperConsumer");
 		JavaSparkContext sc = new JavaSparkContext(sparkConf);
 		JavaStreamingContext streamingContext = new JavaStreamingContext(sc, Durations.seconds(1));
 
@@ -61,12 +63,24 @@ public class ParConsumerService implements Serializable {
 		JavaInputDStream<ConsumerRecord<String, String>> stream = KafkaUtils.createDirectStream(streamingContext,
 				LocationStrategies.PreferConsistent(),
 				ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
-		
+
 		JavaDStream<String> lines = stream.map(x -> x.value().toString());
 		JavaDStream<PoliticalNewsData> politicsNews = lines.map(x -> new Gson().fromJson(x, PoliticalNewsData.class));
-		
-		
-		
+		JavaDStream<ActorGroupFrequency> actorGroups = politicsNews
+				.map(x -> performNERJaccardService.getActorGroupFrequency(x));
+		JavaDStream<String> actorString = actorGroups.map(x -> new Gson().toJson(x));
+
+		actorString.print();
+
+		try {
+			streamingContext.start();
+			logger.info("PAR Consumer Started !!");
+			streamingContext.awaitTermination();
+
+		} catch (Exception e) {
+			logger.error("Error {}", e);
+		}
+
 	}
 
 }
